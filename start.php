@@ -14,13 +14,13 @@ include_once './api/Spider.php';
 $config = include_once './config.php';
 //load config
 
+set_time_limit(0);
 init($config);
 start($config);
 
 function init($config)
 {
     printf('[INFO] 正在初始化程序...' . PHP_EOL);
-    ini_set('max_execution_time', '0');
     //set page time out time;
     foreach ($config['sites'] as $key => $value) {
         if (!file_exists('./article/' . $value['savePath'])) {
@@ -46,6 +46,8 @@ function start($config)
     $dogApi                   = new DogApi($config['dogApi']['username'], $config['dogApi']['password'], $config['dogApi']['domain']);
     $footerAppendContent      = explode('|', $config['footerAppend']);
     $footerAppendContentCount = count($footerAppendContent) - 1;
+    $titleAppendContent       = explode('|', $config['titleAppend']);
+    $titleAppendContentCount  = count($titleAppendContent) - 1;
     $successCount             = 0;
     foreach ($config['sites'] as $value) {
         $articleList = SpiderApi::getNewsList($value['url'], $value['index']['content'], $value['index']['url']);
@@ -61,6 +63,7 @@ function start($config)
             insertTitle($mysqli, $title);
             //插入标题避免重复
             $title   = $dogApi->convertContent($title, true, true);
+            $title   = randInsertStr($title, $titleAppendContent[rand(0, $titleAppendContentCount)], 'utf-8');
             $content = $dogApi->convertContent($content, true, true);
             //convert data
             $path = './article/' . $value['savePath'] . '/' . uniqid() . '.html';
@@ -69,6 +72,7 @@ function start($config)
             //save file
             $indexHtml = '<a href="./' . substr($path, 10, strlen($path)) . '">' . $title . '</a>' . PHP_EOL;
             file_put_contents('./article/index.html', $indexHtml, FILE_APPEND);
+            $successCount++;
             printf('[INFO] 成功抓取第' . $successCount . '次' . PHP_EOL);
         }
     }
@@ -76,4 +80,3 @@ function start($config)
     $mysqli->close();
     printf('[INFO] 结束本次爬取任务，等待下次程序唤醒...' . PHP_EOL);
 }
-
