@@ -18,7 +18,8 @@ return [
     'table' => [
         'CREATE TABLE IF NOT EXISTS `newstable`  (  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT \'文章主键\',  `titleHash` varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT \'标题hash避免重复\',  PRIMARY KEY (`id`) USING BTREE,  INDEX `hash`(`titleHash`) USING BTREE) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;'
     ],
-
+	'titleAppend'=>'蛤蟆|红衣长者|香港记者|跑得快',
+	// | 分割字符  随机插入文章标题
     'footerAppend' => 'test|huaji|6666',
     // | 分割字符  随机文章底部插入内容
 
